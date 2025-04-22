@@ -79,7 +79,8 @@ julia> dot([1, 2], [3, 4])
 11
 ```
 """
-function dot(x::AbstractVector{T}, y::AbstractVector{T}) where T
+function dot(x::AbstractVector, y::AbstractVector)
+    T = promote_type(eltype(x), eltype(y))
     return sum(conj(x) .* y; init = zero(T))
 end
 

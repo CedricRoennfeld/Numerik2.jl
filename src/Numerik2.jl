@@ -33,6 +33,7 @@ export
 
     eye,
 
+    jacobi,
     iterative_solver,
     linear_solve
 

@@ -61,6 +61,21 @@ function iterative_solver(
     end
 end
 
+function jacobi(
+    A::AbstractMatrix{T}, 
+    b::AbstractVector{T}, 
+    x0::AbstractVector{T};
+    tol::Union{Nothing, Real} = nothing, 
+    max_iter::Int = 10000, 
+    custom_norm = x -> norm(x)
+) where T<:Number
+    # extract diagonal from A to exclude it in dot product
+    R = A - diag(diag(A))
+
+    f(x) = [(b[i]-dot(R[i,:],x))/A[i,i] for i in axes(x,1)]
+    return iterative_solver(f, x0; tol=tol, max_iter=max_iter, custom_norm=custom_norm)
+end
+
 
 
 """

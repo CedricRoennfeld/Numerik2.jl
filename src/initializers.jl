@@ -66,3 +66,21 @@ julia> eye(3)
 ```
 """
 eye(n::Integer) = eye(Float64, n, n)
+
+function diag(v::AbstractVector{T}) where T
+    n = length(v)
+    D = zeros(T, n, n)
+    for i in axes(D,1)
+        D[i,i] = v[i]
+    end
+    return D
+end
+
+function diag(A::AbstractMatrix{T}) where T
+    n = min(size(A,1), size(A,2))
+    v = zeros(T,n)
+    for i in axes(v,1)
+        v[i] = A[i,i]
+    end
+    return v
+end
