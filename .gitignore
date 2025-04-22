@@ -1,0 +1,22 @@
+# VSCode settings (you don't want to push your local editor config)
+.vscode/
+
+# Compiled files
+*.ji
+*.o
+*.so
+*.dylib
+*.dll
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Julia compiled cache
+.julia/
+
+# Temporary or backup files
+*~
+
+# Developer files
+dev/
