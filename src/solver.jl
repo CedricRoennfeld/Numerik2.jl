@@ -1,78 +1,67 @@
 """
-    fixed_point_iteration(f, x0::Union{Number, AbstractVector}, n::Integer)
+    iterative_solver(f, x0; tol=nothing, max_iter=10000, custom_norm=x->norm(x))
 
-Performs a fixed-point iteration for `n` steps, starting from initial guess `x0`.
+Applies fixed-point iteration to `f` starting from `x0`. 
 
-Returns the final approximation `x_n = f(f(...f(x0)...))` after `n` iterations.
-
-# Examples
-```jldoctest
-julia> f(x) = cos(x)
-
-julia> fixed_point_iteration(f, 0, 10)
-0.7314040424225098
-
-julia> F(x) = [1/3 * x[2]^2 + 1/8, 1/4 * x[1]^2 - 1/6]
-
-julia> fixed_point_iteration(F, [0,0], 10)
-[0.13376887143948119, -0.16219313892676337]
-```
-"""
-function fixed_point_iteration(f, x0::Union{Number, AbstractVector}, n::Integer)
-    x = copy(x0)  # initialize with initial guess
-    for _ in 1:n
-        x = f(x)  # apply iteration
-    end
-    return x
-end
-
-"""
-    fixed_point_iteration(f, x0::Union{Number, AbstractVector}, 
-                          tol::Float64; max_iter=10000, custom_norm=x->norm(x))
-
-Performs a fixed-point iteration starting from `x0` until convergence within tolerance `tol`.
-
-Stops when the norm of the difference between consecutive iterates is less than `tol`, or
-when `max_iter` iterations are reached (default: 10,000).
+If `tol` is provided, stops when `custom_norm(x_{n+1} - x_n) < tol`, 
+otherwise performs `max_iter` steps.
 
 # Arguments
 - `f`: iteration function
 - `x0`: initial guess (scalar or vector)
 - `tol`: desired absolute tolerance
+- `max_iter`: maximum amount of iteration
 - `custom_norm`: norm function (default: Euclidean norm)
 
-# Returns
-- Approximate solution
-- Number of iterations taken
+# Returns:
+- If tol is `nothing`: the final iterate `x`
+- If tol is set: `(x, iterations)`
 
 # Errors
-Throws an error if no convergence within `max_iter` steps.
+Throws an error if no convergence within `max_iter` steps, but tol is set.
 
-# Examples
 ```jldoctest
 julia> f(x) = cos(x);
-       fixed_point_iteration(f, 0, 1e-5)
+       fixed_point_iteration(f, 0, 10)
+0.7314040424225098
+
+julia> fixed_point_iteration(f, 0, 1e-5)
 (0.7390822985224023, 30)
 
 julia> F(x) = [1/3 * x[2]^2 + 1/8, 1/4 * x[1]^2 - 1/6];
-       fixed_point_iteration(F, [0, 0], 1e-30, custom_norm = x -> norm(x, Inf))
+       fixed_point_iteration(F, [0,0], 10)
+[0.13376887143948119, -0.16219313892676337]       
+
+julia> fixed_point_iteration(F, [0, 0], 1e-30, custom_norm = x -> norm(x, Inf))
 ([0.13376887143813732, -0.16219313892520842], 16)
 ```
 """
-function fixed_point_iteration(f, x0::Union{Number, AbstractVector}, 
-    tol::Float64; max_iter=10000, custom_norm=x->norm(x))
-    xnew = copy(x0)  # current guess
-    for i in 1:max_iter
-        xold = xnew
-        xnew = f(xold)  # apply function
-
-        # stop when fixed point is reached within tolerance
-        if custom_norm(xnew - xold) < tol
-            return xnew, i
+function iterative_solver(
+    f, 
+    x0::Union{Number, AbstractVector};
+    tol::Union{Nothing, Real} = nothing, 
+    max_iter::Int = 10000, 
+    custom_norm = x -> norm(x)
+)
+    x = copy(x0)
+    if tol === nothing
+        for _ in 1:max_iter
+            x = f(x)
         end
+        return x
+    else
+        for i in 1:max_iter
+            x_new = f(x)
+            if custom_norm(x_new - x) < tol
+                return x_new, i
+            end
+            x = x_new
+        end
+        error("Iteration did not converge within $max_iter steps.")
     end
-    error("Fixed-point iteration did not converge within $max_iter steps.")
 end
+
+
 
 """
     best_method(A::AbstractMatrix{T}; opts=NamedTuple()) where T<:Number

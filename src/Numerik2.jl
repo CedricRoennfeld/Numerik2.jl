@@ -33,7 +33,7 @@ export
 
     eye,
 
-    fixed_point_iteration,
+    iterative_solver,
     linear_solve
 
 end # Module
