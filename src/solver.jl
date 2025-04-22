@@ -68,7 +68,7 @@ function jacobi(
     tol::Union{Nothing, Real} = nothing, 
     max_iter::Int = 10000, 
     custom_norm = x -> norm(x)
-) where T<:Number
+) where T<:AbstractFloat
     # extract diagonal from A to exclude it in dot product
     R = A - diag(diag(A))
 
@@ -76,6 +76,24 @@ function jacobi(
     return iterative_solver(f, x0; tol=tol, max_iter=max_iter, custom_norm=custom_norm)
 end
 
+function gauss_seidel(
+    A::AbstractMatrix{T}, 
+    b::AbstractVector{T}, 
+    x0::AbstractVector{T};
+    tol::Union{Nothing, Real} = nothing, 
+    max_iter::Int = 10000, 
+    custom_norm = x -> norm(x)
+) where T<:AbstractFloat
+    # extract diagonal from A to exclude it in dot product
+    R = A - diag(diag(A))
+    f(x) = begin
+        for i in axes(x,1)
+            x[i] = (b[i] - dot(R[i,:], x)) / A[i,i]
+        end
+        return x
+    end
+    return iterative_solver(f, x0; tol=tol, max_iter=max_iter, custom_norm=custom_norm)
+end
 
 
 """

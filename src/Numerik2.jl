@@ -34,6 +34,7 @@ export
     eye,
 
     jacobi,
+    gauss_seidel,
     iterative_solver,
     linear_solve
 
