@@ -54,7 +54,7 @@ julia> norm([1, 4, -8], -2)
 0.9630868246861536
 ```
 """
-function norm(itr::AbstractVector{T}, p::Real=2) where T
+function norm(itr, p::Real=2)
     if p == Inf
         return float(maximum(abs, itr))
     elseif p == -Inf

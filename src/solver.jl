@@ -8,7 +8,7 @@ otherwise performs `max_iter` steps.
 
 # Arguments
 - `f`: iteration function
-- `x0`: initial guess (scalar or vector)
+- `x0`: initial guess (scalar or array)
 - `tol`: desired absolute tolerance
 - `max_iter`: maximum amount of iteration
 - `custom_norm`: norm function (default: Euclidean norm)
@@ -38,7 +38,7 @@ julia> fixed_point_iteration(F, [0, 0], 1e-30, custom_norm = x -> norm(x, Inf))
 """
 function iterative_solver(
     f, 
-    x0::Union{Number, AbstractVector};
+    x0::Union{Number, AbstractArray};
     tol::Union{Nothing, Real} = nothing, 
     max_iter::Int = 10000, 
     custom_norm = x -> norm(x)
@@ -57,6 +57,7 @@ function iterative_solver(
             end
             x = x_new
         end
+        display(x)
         error("Iteration did not converge within $max_iter steps.")
     end
 end

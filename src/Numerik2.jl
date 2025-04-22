@@ -2,6 +2,7 @@
 module Numerik2
 
 include("decomp.jl")
+include("eigen.jl")
 include("helper.jl")
 include("initializers.jl")
 include("solver.jl")
@@ -30,6 +31,11 @@ export
     ishermitian,
     istril,
     istriu,
+
+    hessenberg,
+    eigen,
+    qr_eigenvalues_iterative,
+    spectral_radius,
 
     eye,
 
